@@ -1,20 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { HttpStatus } from '@nestjs/common';
+
 
 @Controller('api/user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post('create')
-  async create(@Body() createUserDto: CreateUserDto) {
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() createUserDto: CreateUserDto): Promise<any> {
     const user = await this.userService.saveUser(createUserDto);
-    if (!user) return { message: 'User could not be created' };
+    if (!user) return { statusCode: HttpStatus.BAD_REQUEST, message: 'User could not be created' };
     return user;
   }
 
 
- 
+
 
 }

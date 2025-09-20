@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-    binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -14,45 +14,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Users {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
-  password  String   
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-
-  listings  BookListing[] @relation("UserListings")
-  orders    Order[]       @relation("UserOrders")
+  listings BookListing[] @relation("UserListings")
+  orders   Order[]       @relation("UserOrders")
 }
 
 model BookListing {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   author      String
   description String?
   price       Float
   condition   Condition
   imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   // Relations
   sellerId String
-  seller   User @relation("UserListings", fields: [sellerId], references: [id])
+  seller   Users   @relation("UserListings", fields: [sellerId], references: [id])
 
-  orders   Order[]
+  orders Order[]
 }
 
 model Order {
-  id        String   @id @default(cuid())
+  id        String      @id @default(cuid())
   status    OrderStatus @default(PENDING)
-  createdAt DateTime @default(now())
+  createdAt DateTime    @default(now())
 
   // Relations
-  buyerId  String
-  buyer    User @relation("UserOrders", fields: [buyerId], references: [id])
+  buyerId String
+  buyer   Users   @relation("UserOrders", fields: [buyerId], references: [id])
 
   listingId String
   listing   BookListing @relation(fields: [listingId], references: [id])
