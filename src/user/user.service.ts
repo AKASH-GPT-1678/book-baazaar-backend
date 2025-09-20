@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaServices } from 'src/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -11,6 +11,11 @@ export class UserService {
 
   async saveUser(createDto: CreateUserDto) {
     try {
+      if (createDto.password != createDto.confirmPassword) {
+        throw new BadRequestException("Password and Confirm password Should match");
+      }
+
+
 
       let existingUser = await this.prisma.user.findFirst({
         where: { email: createDto.email }
@@ -22,7 +27,7 @@ export class UserService {
         data: {
           name: createDto.name,
           email: createDto.email,
-          password: createDto.password, 
+          password: createDto.password,
         },
       });
       console.log(user);
@@ -33,7 +38,7 @@ export class UserService {
       throw new InternalServerErrorException("Something Went Wrong ");
 
 
-    
+
     }
   }
 
