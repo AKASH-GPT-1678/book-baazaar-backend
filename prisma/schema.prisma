@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  listings  BookListing[] @relation("UserListings")
+  orders    Order[]       @relation("UserOrders")
+}
+
+model BookListing {
+  id          String   @id @default(cuid())
+  title       String
+  author      String
+  description String?
+  price       Float
+  condition   Condition
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  sellerId String
+  seller   User @relation("UserListings", fields: [sellerId], references: [id])
+
+  orders   Order[]
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime @default(now())
+
+  // Relations
+  buyerId  String
+  buyer    User @relation("UserOrders", fields: [buyerId], references: [id])
+
+  listingId String
+  listing   BookListing @relation(fields: [listingId], references: [id])
+}
+
+enum Condition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+  POOR
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
