@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode } from '@ne
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { HttpStatus } from '@nestjs/common';
-
+import { LoginUserDto } from './dto/auth-dto';
 
 @Controller('api/user')
 export class UserController {
@@ -14,6 +14,15 @@ export class UserController {
     const user = await this.userService.saveUser(createUserDto);
     if (!user) return { statusCode: HttpStatus.BAD_REQUEST, message: 'User could not be created' };
     return user;
+  }
+
+
+  @Post('login')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async login(@Body() loginDto : LoginUserDto) {
+    const loginAttempt = await this.userService.loginUser(loginDto);
+    return loginAttempt;
+
   }
 
 

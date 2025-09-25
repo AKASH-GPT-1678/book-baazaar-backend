@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { NotFoundException , UnauthorizedException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaServices } from 'src/prisma.service';
 import { RegisterResponseDto } from './dto/auth-dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -65,7 +65,7 @@ export class UserService {
         throw new BadRequestException('Email and password are required');
       }
 
-      // Step 2: Find user by email
+
       const user = await this.prisma.users.findUnique({
         where: { email },
       });
@@ -74,7 +74,7 @@ export class UserService {
         throw new NotFoundException('User not found');
       }
 
-      // Step 3: Compare passwords using comparePassword method
+    
       const isPasswordValid = await comparePassword(password, user.password);
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid password');
@@ -100,7 +100,7 @@ export class UserService {
         throw error;
       }
 
-      // Generic server error for unknown exceptions
+
       throw new InternalServerErrorException('Something went wrong');
     }
   }
