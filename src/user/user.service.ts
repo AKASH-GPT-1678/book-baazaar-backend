@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Res } from '@nestjs/common';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaServices } from 'src/prisma.service';
 import { RegisterResponseDto } from '../auth/dto/auth-dto';
@@ -13,6 +13,18 @@ export class UserService {
     private prisma: PrismaServices
 
   ) { }
+
+
+  async findUserByEmail(email: string): Promise<any> {
+    const user = await this.prisma.users.findUnique({ where: { email: email } })
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+
+    
+    return user;
+  }
 
 
 
