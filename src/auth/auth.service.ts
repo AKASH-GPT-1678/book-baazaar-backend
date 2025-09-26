@@ -112,7 +112,7 @@ export class AuthService {
     }
 
 
-    async generateToken(user: RegisterResponseDto) {
+    async generateToken(user: any) {
         const payload = { email: user.email, sub: user.id };
         const access_token = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET });
         return {
