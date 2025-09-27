@@ -10,9 +10,8 @@ export class SellerService {
 
   ) { }
 
-  async listBooks(product: CreateBookListingDto, userId: string, imageUrl: string) {
-
-
+async listBooks(product: CreateBookListingDto, userId: string, imageUrl: string) {
+  try {
     const book = await this.prisma.bookListing.create({
       data: {
         title: product.title,
@@ -25,14 +24,19 @@ export class SellerService {
         imageUrl: imageUrl,
         seller: {
           connect: {
-            id: userId
-          }
-        }
-      }
-    })
-    return book;
+            id: userId,
+          },
+        },
+      },
+    });
 
+    console.log("✅ Book created successfully:", book);
+    return book;
+  } catch (error) {
+    console.error("❌ Error creating book:", error);
+    throw error; // rethrow so the error can be handled by the caller
   }
+}
 
   async loadListings(sellerId: string) {
     const findSeller = await this.prisma.users.findUnique({
