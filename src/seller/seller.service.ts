@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaServices } from 'src/prisma.service';
 import { CreateBookListingDto } from './entities/listing.entity';
 import { AppService } from 'src/app.service';
@@ -32,6 +32,28 @@ export class SellerService {
     })
     return book;
 
+  }
+
+  async loadListings(sellerId: string) {
+    const findSeller = await this.prisma.users.findUnique({
+      where: {
+        id: sellerId
+      }
+    });
+
+    if (!findSeller) {
+      throw new NotFoundException("Seller not found");
+    };
+    const books = await this.prisma.bookListing.findMany({
+      where: {
+        sellerId: sellerId
+      }
+    });
+
+    if (books.length == 0) {
+      throw new NotFoundException("No books found");
+    }
+    return books;
   }
 }
 

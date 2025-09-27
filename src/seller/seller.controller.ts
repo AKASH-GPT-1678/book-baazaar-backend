@@ -14,7 +14,7 @@ export class SellerController {
 
   ) { }
 
-  @Post('listing')
+  @Post('list')
   @UseGuards(JwtGuard)
   @UseInterceptors(FileInterceptor('image'))
   async listBooks(
@@ -40,8 +40,15 @@ export class SellerController {
     return this.sellerService.listBooks(product, userId, fileUrl);
   }
 
-  // Don't forget to import AnyFilesInterceptor
-  // import { AnyFilesInterceptor } from '@nestjs/platform-express';
+
+  @Get('listings')
+  @UseGuards(JwtGuard)
+  async loadListings(@Req() req: any) {
+    const sellerId = req.user.sub;
+    return this.sellerService.loadListings(sellerId);
+  }
+
+
 
 
 
