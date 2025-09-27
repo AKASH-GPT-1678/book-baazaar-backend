@@ -35,7 +35,7 @@ model BookListing {
   condition   Condition
   isBundle    Boolean   @default(false)
   category    String
-  imageUrl    String?
+  imageUrl    String?   @default("https://placehold.co/400")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -44,7 +44,6 @@ model BookListing {
 
   orders Order[]
 }
-
 
 model Order {
   id        String      @id @default(cuid())

@@ -10,5 +10,6 @@ import { SellerModule } from './seller/seller.module';
   imports: [UserModule, AuthModule, SellerModule],
   controllers: [AppController],
   providers: [AppService, PrismaServices],
+  exports :[AppService]
 })
 export class AppModule {}

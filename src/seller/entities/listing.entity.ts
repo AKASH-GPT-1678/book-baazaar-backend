@@ -1,8 +1,7 @@
 import { IsString, IsBoolean, IsOptional, IsEnum } from "class-validator";
-import { Prisma } from "@prisma/client";
-import {Condition} from "@prisma/client"
+import { Condition } from "@prisma/client"
 
-
+import { Transform } from "class-transformer";
 
 export class CreateBookListingDto {
     @IsString()
@@ -24,13 +23,11 @@ export class CreateBookListingDto {
     condition: Condition;
 
     @IsOptional()
-    @IsBoolean()
+    @Transform(({ value }) => value === 'true')
     isBundle?: boolean;
 
     @IsString()
     category: string;
 
-    @IsOptional()
-    @IsString()
-    imageUrl?: string;
+
 }

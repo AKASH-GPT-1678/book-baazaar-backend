@@ -65,7 +65,7 @@ export class AuthService {
         try {
             const { email, password } = loginDto;
 
-            // Step 1: Validate input
+ 
             if (!email || !password) {
                 throw new BadRequestException('Email and password are required');
             }
