@@ -64,6 +64,7 @@ export class AuthService {
     async loginUser(loginDto: LoginUserDto): Promise<RegisterResponseDto> {
         try {
             const { email, password } = loginDto;
+            console.log(email , password);
 
  
             if (!email || !password) {

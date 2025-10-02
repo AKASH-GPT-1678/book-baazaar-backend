@@ -13,7 +13,7 @@ export class ProductController {
   @Get('listings/:category')
   async loadProducts(@Param('category') category: string) {
     const products = await this.productService.loadProducts(category);
-    console.log(products)
+
     return products; 
   }
  
