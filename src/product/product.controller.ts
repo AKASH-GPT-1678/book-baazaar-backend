@@ -16,5 +16,11 @@ export class ProductController {
 
     return products; 
   }
+
+  @Get(":id")
+  async getProductById(@Param("id") id: string) {
+    return await this.productService.loadProductById(id);
+  }
+
  
 }
