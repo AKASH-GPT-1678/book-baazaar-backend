@@ -1,20 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-
+import { CreateOrderDto } from './dto/create-order.dto';
+import { JwtGuard } from 'src/jwt/jwt.guard';
 @Controller('api/product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(private readonly productService: ProductService) { }
 
 
 
 
   @Get('listings/:category')
   async loadProducts(@Param('category') category: string) {
-    const products = await this.productService.loadProducts(category);
 
-    return products; 
+    const products = await this.productService.loadProducts(category);
+ 
+
+    return products;
   }
 
   @Get(":id")
@@ -22,5 +25,15 @@ export class ProductController {
     return await this.productService.loadProductById(id);
   }
 
- 
+
+
+  @Post('placeorder')
+  @UseGuards(JwtGuard)
+  async placeOrder(@Req() req, @Body() dto: CreateOrderDto) {
+    const userId = req.user.sub;
+    const order = await this.productService.createOrder(userId, dto);
+    return { message: 'Order placed successfully', order };
+  }
+
+
 }
