@@ -15,7 +15,7 @@ export class ProductController {
   async loadProducts(@Param('category') category: string) {
 
     const products = await this.productService.loadProducts(category);
- 
+
 
     return products;
   }
@@ -33,6 +33,17 @@ export class ProductController {
     const userId = req.user.sub;
     const order = await this.productService.createOrder(userId, dto);
     return { message: 'Order placed successfully', order };
+  }
+
+  @Get('load/orders')
+  @UseGuards(JwtGuard)
+  async loadBuyerOrder(@Req() req) {
+    console.log(req);
+    const userId = req.user.sub;
+    console.log(userId)
+    const order = await this.productService.loadOrders(userId);
+    console.log(order)
+    return { message: 'Orders loaded Successfully', order };
   }
 
 

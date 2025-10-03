@@ -4,6 +4,8 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaServices } from 'src/prisma.service';
 import { BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { title } from 'process';
+import { OrderResponseDto } from './dto/order-response.dto';
 @Injectable()
 export class ProductService {
   constructor(
@@ -65,12 +67,12 @@ export class ProductService {
         where: { id },
       });
 
-      // 3. If no product found
+
       if (!product) {
         throw new NotFoundException("No such product found");
       }
 
-      // 4. Return product
+
       return product;
 
     } catch (error) {
@@ -122,4 +124,68 @@ export class ProductService {
       throw new InternalServerErrorException('Failed to place order');
     }
   }
+
+  async loadOrders(userId: string) {
+    try {
+
+      if (!userId) {
+        throw new BadRequestException('User ID must be provided');
+      }
+
+
+      const orders = await this.prisma.order.findMany({
+        where: { buyerId: userId },
+        include: {
+          listing: true,
+        }
+
+      });
+      console.log(orders);
+
+
+      if (!orders || orders.length === 0) {
+        return [];
+      };
+
+
+      const refineOrders = orders.map((data) => {
+
+        return {
+
+          id: data.id,
+          title: data.listing.title,
+          imageUrl: data.listing.imageUrl,
+          author: data.listing.author,
+          description: data.listing.description,
+          category: data.listing.category,
+          price: data.listing.price,
+          condition: data.listing.condition,
+          listingId: data.listingId
+
+
+        } as OrderResponseDto;
+      });
+
+
+      return refineOrders;
+
+    } catch (error) {
+      console.log(error);
+
+      if (
+        error instanceof BadRequestException
+
+      ) {
+        throw error;
+      }
+
+ 
+      console.error('Error loading orders:', error);
+      throw new InternalServerErrorException(
+        'Something went wrong while fetching orders',
+        error
+      );
+    }
+  }
+
 }
