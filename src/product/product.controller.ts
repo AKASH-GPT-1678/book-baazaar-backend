@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -23,6 +23,11 @@ export class ProductController {
   @Get(":id")
   async getProductById(@Param("id") id: string) {
     return await this.productService.loadProductById(id);
+  }
+
+  @Put("view/:id")
+  async addView(@Param("id") id: string) {
+    return await this.productService.addView(id);
   }
 
 

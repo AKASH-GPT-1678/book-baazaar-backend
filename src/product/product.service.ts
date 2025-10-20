@@ -186,6 +186,32 @@ export class ProductService {
         error
       );
     }
-  }
+  };
+  async addView(id : string){
+    const listing = await this.prisma.bookListing.findUnique({
+      where : {
+        id : id
+      }
+    });
+
+    if (!listing) {
+      throw new NotFoundException('Product not found');
+    }
+  const work = await this.prisma.bookListing.update({
+      where : {
+        id : id
+      },
+      data : {
+        views : listing.views + 1
+         
+      }
+    });
+    console.log(work.views);
+
+    return {sucess : true};
+   
+  };
+
+  
 
 }
