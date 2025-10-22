@@ -64,7 +64,7 @@ export class ProductService {
 
       // 2. Fetch product from DB
       const product = await this.prisma.bookListing.findUnique({
-        where: { id },
+        where: { id : id },
       });
 
 

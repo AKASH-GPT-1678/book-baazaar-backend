@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -11,20 +11,14 @@ export class ProductController {
 
 
 
+
+  // Put dynamic routes LAST
   @Get('listings/:category')
   async loadProducts(@Param('category') category: string) {
-
+    console.log(category, "category received");
     const products = await this.productService.loadProducts(category);
-
-
     return products;
   }
-
-  @Get(":id")
-  async getProductById(@Param("id") id: string) {
-    return await this.productService.loadProductById(id);
-  }
-
   @Put("view/:id")
   async addView(@Param("id") id: string) {
     return await this.productService.addView(id);
@@ -42,6 +36,13 @@ export class ProductController {
 
   @Get('load/orders')
   @UseGuards(JwtGuard)
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * This function loads all orders made by a buyer
+   * @param req Express request object
+   * @returns A JSON object containing a message and the orders
+   */
+  /*******  ae558033-09b2-468a-b02f-4d1f2641bad5  *******/
   async loadBuyerOrder(@Req() req) {
     console.log(req);
     const userId = req.user.sub;

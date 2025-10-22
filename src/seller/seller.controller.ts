@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, Query, } from '@nestjs/common';
 import { SellerService } from './seller.service';
 import { CreateBookListingDto } from './entities/listing.entity';
 import { JwtGuard } from 'src/jwt/jwt.guard';
@@ -13,6 +13,13 @@ export class SellerController {
 
 
   ) { }
+
+    // Put specific routes FIRST
+  @Get("load")
+  async getProductById(@Query("id") id: string) {
+    console.log("Loading product by id:", id);
+    return await this.sellerService.loadProductById(id);
+  }
 
   @Post('list')
   @UseGuards(JwtGuard)
