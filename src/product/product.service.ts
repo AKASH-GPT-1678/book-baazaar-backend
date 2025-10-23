@@ -187,6 +187,46 @@ export class ProductService {
       );
     }
   };
+  // Add a book to favorites
+  async addFavorite(userId: string, listingId: string) {
+    // Check if user exists
+    const user = await this.prisma.users.findUnique({
+      where: { id: userId },
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    // Check if listing exists
+    const listing = await this.prisma.bookListing.findUnique({
+      where: { id: listingId },
+    });
+    if (!listing) throw new NotFoundException('Book listing not found');
+
+    // Check if this favorite already exists
+    const existingFavorite = await this.prisma.favorites.findFirst({
+      where: {
+        usersId: userId,
+        bookListingId: listingId,
+      },
+    });
+    if (existingFavorite) {
+      throw new BadRequestException('Book already in favorites');
+    }
+
+    // Create favorite entry
+    const favorite = await this.prisma.favorites.create({
+      data: {
+        usersId: userId,
+        bookListingId: listingId,
+        bookId: listing.id, // storing the bookId as well
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Book added to favorites successfully',
+      favorite,
+    };
+  }
   async addView(id : string){
     const listing = await this.prisma.bookListing.findUnique({
       where : {

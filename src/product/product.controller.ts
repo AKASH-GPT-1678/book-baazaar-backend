@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put, Query, UnauthorizedException } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -36,13 +36,6 @@ export class ProductController {
 
   @Get('load/orders')
   @UseGuards(JwtGuard)
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * This function loads all orders made by a buyer
-   * @param req Express request object
-   * @returns A JSON object containing a message and the orders
-   */
-  /*******  ae558033-09b2-468a-b02f-4d1f2641bad5  *******/
   async loadBuyerOrder(@Req() req) {
     console.log(req);
     const userId = req.user.sub;
@@ -50,6 +43,22 @@ export class ProductController {
     const order = await this.productService.loadOrders(userId);
     console.log(order)
     return { message: 'Orders loaded Successfully', order };
+  };
+
+
+  @UseGuards(JwtGuard)
+  @Post('add')
+  async addToFavorites(
+    @Req() req: any,
+    @Body('listingId') listingId: string,
+  ) {
+    const userId = req.user?.sub;
+
+    if (!userId) {
+      throw new UnauthorizedException('User ID not found in token');
+    }
+
+    return this.productService.addFavorite(userId, listingId);
   }
 
 
