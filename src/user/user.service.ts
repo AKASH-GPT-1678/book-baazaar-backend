@@ -26,11 +26,38 @@ export class UserService {
     return user;
   };
 
+  async addUserAddress(id: string, address: string) {
+
+    try {
+      const user = await this.prisma.users.findUniqueOrThrow({ where: { id: id } });
+
+      await this.prisma.users.update({
+        where: { id: id },
+        data: {
+          address: address
+        }
+      });
+      return { sucess: true };
+
+    } catch (error) {
+      console.log(error);
+      return { sucess: false };
+
+
+
+
+    };
+
+  
 
 
 
 
 
 
+
+
+
+  }
 
 }

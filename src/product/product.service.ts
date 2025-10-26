@@ -64,7 +64,7 @@ export class ProductService {
 
       // 2. Fetch product from DB
       const product = await this.prisma.bookListing.findUnique({
-        where: { id : id },
+        where: { id: id },
       });
 
 
@@ -179,7 +179,7 @@ export class ProductService {
         throw error;
       }
 
- 
+
       console.error('Error loading orders:', error);
       throw new InternalServerErrorException(
         'Something went wrong while fetching orders',
@@ -227,31 +227,74 @@ export class ProductService {
       favorite,
     };
   }
-  async addView(id : string){
+  async addView(id: string) {
     const listing = await this.prisma.bookListing.findUnique({
-      where : {
-        id : id
+      where: {
+        id: id
       }
     });
 
     if (!listing) {
       throw new NotFoundException('Product not found');
     }
-  const work = await this.prisma.bookListing.update({
-      where : {
-        id : id
+    const work = await this.prisma.bookListing.update({
+      where: {
+        id: id
       },
-      data : {
-        views : listing.views + 1
-         
+      data: {
+        views: listing.views + 1
+
       }
     });
     console.log(work.views);
 
-    return {sucess : true};
-   
+    return { sucess: true };
+
   };
 
+
+  async loadBundles(category: string) {
+    try {
+
+      if (!category || typeof category !== 'string' || category.trim() === '') {
+        throw new BadRequestException('Category must be a non-empty string');
+      }
+
+    
+      const bundles = await this.prisma.bookListing.findMany({
+        where: {
+          isBundle: true,
+          category: category,
+        },
+      });
+
+ 
+      if (!bundles || bundles.length === 0) {
+        throw new NotFoundException(`No bundles found for category: ${category}`);
+      }
+
   
+      return bundles;
+
+    } catch (error) {
+
+      if (error.code === 'P2025') {
+
+        throw new NotFoundException('Requested data not found');
+      }
+
+      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+      
+        throw error;
+      }
+
+  
+      console.error('Error loading bundles:', error);
+      throw new InternalServerErrorException(
+        'Something went wrong while fetching bundles',
+      );
+    }
+  }
+
 
 }

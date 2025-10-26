@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put, Query, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put, Query, UnauthorizedException, HttpCode, HttpStatus } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -15,7 +15,7 @@ export class ProductController {
   // Put dynamic routes LAST
   @Get('listings/:category')
   async loadProducts(@Param('category') category: string) {
-    console.log(category, "category received");
+
     const products = await this.productService.loadProducts(category);
     return products;
   }
@@ -37,11 +37,11 @@ export class ProductController {
   @Get('load/orders')
   @UseGuards(JwtGuard)
   async loadBuyerOrder(@Req() req) {
-    console.log(req);
+
     const userId = req.user.sub;
-    console.log(userId)
+
     const order = await this.productService.loadOrders(userId);
-    console.log(order)
+
     return { message: 'Orders loaded Successfully', order };
   };
 
@@ -59,6 +59,24 @@ export class ProductController {
     }
 
     return this.productService.addFavorite(userId, listingId);
+  };
+  @Get('bundles/:category')
+  @HttpCode(HttpStatus.OK)
+  async getBundlesByCategory(
+    @Param('category') category: string
+  ) {
+    try {
+      const bundles = await this.productService.loadBundles(category.trim().toString());
+      return {
+        success: true,
+        category,
+        total: bundles.length,
+        data: bundles,
+      };
+    } catch (error) {
+      // Let NestJS handle custom exceptions automatically (BadRequest, NotFound, etc.)
+      throw error;
+    }
   }
 
 
