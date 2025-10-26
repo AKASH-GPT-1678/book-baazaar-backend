@@ -260,7 +260,7 @@ export class ProductService {
         throw new BadRequestException('Category must be a non-empty string');
       }
 
-    
+
       const bundles = await this.prisma.bookListing.findMany({
         where: {
           isBundle: true,
@@ -268,12 +268,12 @@ export class ProductService {
         },
       });
 
- 
+
       if (!bundles || bundles.length === 0) {
         throw new NotFoundException(`No bundles found for category: ${category}`);
       }
 
-  
+
       return bundles;
 
     } catch (error) {
@@ -284,16 +284,40 @@ export class ProductService {
       }
 
       if (error instanceof BadRequestException || error instanceof NotFoundException) {
-      
+
         throw error;
       }
 
-  
+
       console.error('Error loading bundles:', error);
       throw new InternalServerErrorException(
         'Something went wrong while fetching bundles',
       );
     }
+  };
+  async getFavoritesByUser(userId: string) {
+    // Check if user exists
+    const user = await this.prisma.users.findUnique({
+      where: { id: userId },
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const favorites = await this.prisma.favorites.findMany({
+      where: {
+        usersId: userId,
+      },
+      include: {
+        BookListing: true
+      },
+    });
+
+
+
+    return {
+      success: true,
+      count: favorites.length,
+      favorites,
+    };
   }
 
 

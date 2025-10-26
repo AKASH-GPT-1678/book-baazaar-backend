@@ -1,7 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put, Query, UnauthorizedException, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put, UnauthorizedException, HttpCode, HttpStatus } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 @Controller('api/product')
@@ -9,10 +7,6 @@ export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
 
-
-
-
-  // Put dynamic routes LAST
   @Get('listings/:category')
   async loadProducts(@Param('category') category: string) {
 
@@ -47,7 +41,7 @@ export class ProductController {
 
 
   @UseGuards(JwtGuard)
-  @Post('add')
+  @Post('favorite')
   async addToFavorites(
     @Req() req: any,
     @Body('listingId') listingId: string,
@@ -57,9 +51,19 @@ export class ProductController {
     if (!userId) {
       throw new UnauthorizedException('User ID not found in token');
     }
+    console.log('Working')
 
     return this.productService.addFavorite(userId, listingId);
   };
+  @UseGuards(JwtGuard)
+  @Get('favorites')
+  async getUserFavorites(@Req() req: any) {
+    // req.user is set by JwtAuthGuard after validating token
+    const userId = req.user.sub;
+    return this.productService.getFavoritesByUser(userId);
+  }
+
+
   @Get('bundles/:category')
   @HttpCode(HttpStatus.OK)
   async getBundlesByCategory(
