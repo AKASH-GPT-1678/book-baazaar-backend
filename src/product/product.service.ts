@@ -29,7 +29,7 @@ export class ProductService {
 
       const products = await this.prisma.bookListing.findMany({
         where: {
-          category: category
+          category: category,
         },
         take: 10
       });
