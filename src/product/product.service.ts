@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaServices } from 'src/prisma.service';
 import { BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { title } from 'process';
+import { CreateReviewDto } from './dto/create-review.dto';
 import { OrderResponseDto } from './dto/order-response.dto';
 @Injectable()
 export class ProductService {
@@ -295,6 +293,29 @@ export class ProductService {
       );
     }
   };
+  
+
+  async addReview(review : CreateReviewDto) {
+    const book = await this.prisma.bookListing.findUnique({where: {id: review.bookId}});
+    if (!book) {
+      throw new NotFoundException('Book not found');
+
+
+    }
+    if(!review.reviewId) {
+       throw new BadRequestException('Review ID is required');
+    }
+    const response = await this.prisma.review.create({
+      data: {
+        title: review.title,
+        description: review.description,
+        bookId: review.bookId,
+        reviewId: review.reviewId
+      }
+    });
+    console.log(response);
+    return response
+  }
   async getFavoritesByUser(userId: string) {
     // Check if user exists
     const user = await this.prisma.users.findUnique({

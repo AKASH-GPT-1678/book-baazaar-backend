@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put,
 import { ProductService } from './product.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtGuard } from 'src/jwt/jwt.guard';
+import { CreateReviewDto } from './dto/create-review.dto';
 @Controller('api/product')
 export class ProductController {
   constructor(private readonly productService: ProductService) { }
@@ -16,6 +17,15 @@ export class ProductController {
   @Put("view/:id")
   async addView(@Param("id") id: string) {
     return await this.productService.addView(id);
+  }
+  @Post('review')
+  @UseGuards(JwtGuard)
+  async addReview(@Req() req,@Body() review: CreateReviewDto) {
+    const userId = req.user.sub;
+    review.reviewId = userId;
+    return await this.productService.addReview(review);
+
+
   }
 
 

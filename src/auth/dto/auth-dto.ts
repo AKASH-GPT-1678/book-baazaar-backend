@@ -5,6 +5,7 @@ export class RegisterResponseDto {
     email: string;
     success: boolean;
     message: string;
+    address : string
   }
   export class LoginUserDto {
     email: string;

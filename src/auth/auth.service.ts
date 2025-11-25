@@ -90,6 +90,7 @@ export class AuthService {
             const response = new RegisterResponseDto();
             response.name = user.name;
             response.email = user.email;
+            response.address = user.address ?? '';
             response.id = user.id;
             response.success = true;
             response.message = 'Login successful';
@@ -119,7 +120,8 @@ export class AuthService {
         return {
             email: user.email,
             success: true,
-            access_token: access_token
+            access_token: access_token,
+            address : user.address
         }
     }
 }

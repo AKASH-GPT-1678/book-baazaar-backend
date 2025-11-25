@@ -19,7 +19,7 @@ model Users {
   name      String
   email     String   @unique
   password  String
-  address   String?   @default("India")
+  address   String?  @default("India")
   contact   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -27,6 +27,7 @@ model Users {
   listings  BookListing[] @relation("UserListings")
   orders    Order[]       @relation("UserOrders")
   favorites Favorites[]   @relation("Favorites")
+  reviews   Review[]
 }
 
 model BookListing {
@@ -49,6 +50,18 @@ model BookListing {
 
   orders    Order[]
   Favorites Favorites[]
+  reviews   Review[]
+}
+
+model Review {
+  id          String      @id @default(uuid())
+  title       String
+  description String?
+  bookId      String
+  books       BookListing @relation(fields: [bookId], references: [id])
+  reviewId    String
+  reviewer    Users       @relation(fields: [reviewId], references: [id])
+  createdAt   DateTime    @default(now())
 }
 
 model Favorites {
